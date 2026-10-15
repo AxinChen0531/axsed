@@ -1,6 +1,6 @@
 #include <axsed/axsed.h>
 
 int main() {
-    auto t = axsed::ax_get_tid();
+    AX_INFO("hello, axsed!");
     return 0;
 }

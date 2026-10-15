@@ -17,7 +17,7 @@ namespace axsed
                 k <<= 1;
             m_capacity = k;
         }
-        m_buffer = static_cast<uint8_t*>(AX_MALLOC(m_capacity));
+        m_buffer = static_cast<uint8_t*>(ax_malloc(m_capacity));
         if (!m_buffer) {
             m_capacity = 0;
         }
@@ -26,7 +26,7 @@ namespace axsed
 
     RingBufferSPSC::~RingBufferSPSC() {
         if (m_buffer) {
-            AX_FREE(m_buffer);
+            ax_free(m_buffer);
         }
     }
 

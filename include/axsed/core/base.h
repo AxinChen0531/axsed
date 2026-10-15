@@ -35,17 +35,6 @@
 #   endif
 #endif
 
-#define AX_CPU_PAUSE_HINT() axsed::ax_cpu_pause_hint()
-#define AX_MEMORY_FUNC(malloc_, aligned_alloc_, calloc_, realloc_, free_) axsed::ax_set_memory_function(malloc_, aligned_alloc_, calloc_, realloc_, free_)
-#define AX_MALLOC(size) axsed::ax_malloc(size)
-#define AX_ALIGNED_MALLOC(T, count) axsed::ax_aligned_alloc<T>(count)
-#define AX_ALIGNED_MALLOC_NT(alignment, size) axsed::ax_aligned_alloc(alignment, size)
-#define AX_CALLOC(elementNum, elementSize) axsed::ax_calloc(elementNum, elementSize)
-#define AX_REALLOC(ptr, size) axsed::ax_realloc(ptr, size)
-#define AX_FREE(ptr) axsed::ax_free(ptr)
-#define AX_NEW(T, ...) axsed::ax_new<T>(__VA_ARGS__)
-#define AX_DELETE(ptr) axsed::ax_delete(ptr)
-
 #if (defined(__x86_64__) || defined(__i386__) || defined(_M_IX86) || defined(_M_X64)) && (defined(__SSE2__) || defined(_MSC_VER))
 #include <emmintrin.h>
 #endif
@@ -164,7 +153,6 @@ namespace axsed
      * @param size the required memory size
      * @return nullptr for failure, otherwise the allocated memory head
      * @note multi-thread safe
-     * @attention use @ref axe_aligned_free to free the allocation
      */
     [[nodiscard]] AXSEDCORE_API void* ax_aligned_alloc(size_t alignment, size_t size);
 
@@ -179,17 +167,20 @@ namespace axsed
     }
 
     /**
-     * new instance of T, using macro AXE_NEW instead
+     * new instance of T
      * @note multi-thread safe
      */
     template<typename T, typename... Args> requires std::is_constructible_v<T, Args...>
     [[nodiscard]] T* ax_new(Args&&... args) {
-        T* ptr = ax_aligned_alloc<T>(1);
-        return std::construct_at(ptr, std::forward<Args>(args)...);
+        if constexpr (alignof(T) > alignof(std::max_align_t)) {
+            return std::construct_at(ax_aligned_alloc<T>(1), std::forward<Args>(args)...);
+        } else {
+            return std::construct_at(static_cast<T*>(ax_malloc(sizeof(T))), std::forward<Args>(args)...);
+        }
     }
 
     /**
-     * the delete function for instance created by AXE_NEW, AXE_DELETE instead
+     * the delete function for instance created by ax_new
      * @note multi-thread safe
      */
     template<typename T> requires std::is_destructible_v<T>
@@ -245,16 +236,6 @@ namespace axsed
             ax_free(p);
         }
 
-        template<typename U, typename... Args>
-        void construct(U* p, Args&&... args) {
-            std::construct_at(p, std::forward<Args>(args)...);
-        }
-
-        template<typename U>
-        void destroy(U* p) {
-            std::destroy_at(p);
-        }
-
         bool operator==(const AxAllocator&) const noexcept { return true; }
         bool operator!=(const AxAllocator&) const noexcept { return false; }
     };
@@ -296,12 +277,30 @@ namespace axsed
     using U16String = std::basic_string<char16_t, std::char_traits<char16_t>, AxAllocator<char16_t>>;
     using U32String = std::basic_string<char32_t, std::char_traits<char32_t>, AxAllocator<char32_t>>;
 
+    struct AxDeleter
+    {
+        template<class T>
+        void operator()(T* p) const noexcept {
+            ax_delete(p);
+        }
+    };
+
+    template<typename T>
+    using Scope = std::unique_ptr<T, AxDeleter>;
     template<typename T>
     using Ref = std::shared_ptr<T>;
     template<typename T>
     using WeakRef = std::weak_ptr<T>;
-    template<typename T>
-    using Scope = std::unique_ptr<T>;
+
+    template<class T, class... Args>
+    Scope<T> ax_make_scope(Args&&... args) {
+        return Scope<T>(ax_new<T>(std::forward<Args>(args)...));
+    }
+
+    template<class T, class... Args>
+    Ref<T> ax_make_ref(Args&&... args) {
+        return std::allocate_shared<T>(AxAllocator<T>{}, std::forward<Args>(args)...);
+    }
 }
 
 #endif //AXSED_BASE_H

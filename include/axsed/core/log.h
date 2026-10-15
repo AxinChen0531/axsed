@@ -8,12 +8,12 @@
 #include <mutex>
 #include <shared_mutex>
 
-// #define AX_TRACE(...)
-// #define AX_DEBUG(...)
-// #define AX_INFO(...)
-// #define AX_WARN(...)
-// #define AX_ERROR(...)
-// #define AX_FATAL(...)
+#define AX_TRACE(...)   axsed::ax_get_default_logger()->log(axsed::LOGLEVEL_TRACE, __VA_ARGS__)
+#define AX_DEBUG(...)   axsed::ax_get_default_logger()->log(axsed::LOGLEVEL_DEBUG, __VA_ARGS__)
+#define AX_INFO(...)    axsed::ax_get_default_logger()->log(axsed::LOGLEVEL_INFO, __VA_ARGS__)
+#define AX_WARN(...)    axsed::ax_get_default_logger()->log(axsed::LOGLEVEL_WARN, __VA_ARGS__)
+#define AX_ERROR(...)   axsed::ax_get_default_logger()->log(axsed::LOGLEVEL_ERROR, __VA_ARGS__)
+#define AX_FATAL(...)   axsed::ax_get_default_logger()->log(axsed::LOGLEVEL_FATAL, __VA_ARGS__)
 
 namespace axsed
 {
@@ -40,6 +40,9 @@ namespace axsed
         LOGLEVEL_ Level;
     };
 
+    /**
+     * derive to custom logger's sink
+     */
     class AXSEDCORE_API ILogSink
     {
     public:
@@ -50,6 +53,21 @@ namespace axsed
          * @attention user should promise the multi-thread safety
          */
         virtual void sinkIt(const LogMeta& msg) = 0;
+    };
+
+    class Logger;
+    /**
+     * default logger's default sink
+     * to output colored text to terminal
+     */
+    class AXSEDCORE_API StdoutColorSink final : public ILogSink
+    {
+    public:
+        explicit StdoutColorSink();
+        ~StdoutColorSink() override;
+        void sinkIt(const LogMeta& msg) override;
+
+        static Logger* GenerateLogger(std::string_view loggerName, LOGLEVEL_ level = LOGLEVEL_TRACE);
     };
 
     /**
@@ -64,7 +82,7 @@ namespace axsed
          * @param loggerName the logger's name
          * @param level the logger's minium processing level
          */
-        Logger(std::string_view loggerName, LOGLEVEL_ level);
+        explicit Logger(std::string_view loggerName, LOGLEVEL_ level = LOGLEVEL_TRACE);
 
         /**
          * @attention multi-thread unsafe, make sure no log function calling before destroy
@@ -78,13 +96,13 @@ namespace axsed
         [[nodiscard]] LOGLEVEL_ getLevel() const noexcept;
         /**
          * get log msg composite pattern
-         * default is "[$ymd$ $cms$][$lvs$] $ln$ | $msg$"
+         * default is "[$ymd$ $cms$] $msg$"
          * @attention multi-thread safe
          */
         [[nodiscard]] String getPattern() const noexcept;
         /**
          * set the logger's minium processing level
-         * default is "[$ymd$ $cms$][$lvs$] $ln$ | $msg$"
+         * default is "[$ymd$ $cms$] $msg$"
          * @param level the minium level
          * @attention multi-thread safe
          */
@@ -171,6 +189,21 @@ namespace axsed
         String m_name;
         std::atomic<LOGLEVEL_> m_level;
     };
+
+    /**
+     * get the default logger
+     * macro AX_TRACE AX_DEBUG AX_INFO AX_WARN AX_ERROR AX_FATAL will using the default logger
+     * have a default Logger with StdoutColorSink, set to nullptr to save some memory(NOT RECOMMENDED)
+     */
+    AXSEDCORE_API Scope<Logger>& ax_get_default_logger();
+    /**
+     * default logger setting, will delete the old one.
+     * macro AX_TRACE AX_DEBUG AX_INFO AX_WARN AX_ERROR AX_FATAL will using the default logger
+     * have a default Logger with StdoutColorSink, set to nullptr to save some memory(NOT RECOMMENDED)
+     * @attention multi-thread unsafe
+     * @param logger
+     */
+    AXSEDCORE_API void ax_set_default_logger(Scope<Logger>&& logger);
 }
 
 #endif //AXSED_LOG_H

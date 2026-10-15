@@ -2,6 +2,32 @@
 
 namespace axsed
 {
+    StdoutColorSink::StdoutColorSink() = default;
+    StdoutColorSink::~StdoutColorSink() = default;
+
+    void StdoutColorSink::sinkIt(const LogMeta& msg) {
+        switch (msg.Level) {
+            case LOGLEVEL_TRACE: fprintf(stdout, "\033[2;37m%s\033[0m\n", msg.Message.data());
+                break;
+            case LOGLEVEL_DEBUG: fprintf(stdout, "\033[1;37m%s\033[0m\n", msg.Message.data());
+                break;
+            case LOGLEVEL_INFO: fprintf(stdout, "\033[1;32m%s\033[0m\n", msg.Message.data());
+                break;
+            case LOGLEVEL_WARN: fprintf(stdout, "\033[1;33m%s\033[0m\n", msg.Message.data());
+                break;
+            case LOGLEVEL_ERROR: fprintf(stdout, "\033[1;31m%s\033[0m\n", msg.Message.data());
+                break;
+            case LOGLEVEL_FATAL: fprintf(stdout, "\033[1;37;41m%s\033[0m\n", msg.Message.data());
+                break;
+        }
+    }
+
+    Logger* StdoutColorSink::GenerateLogger(std::string_view loggerName, LOGLEVEL_ level) {
+        auto* ans = ax_new<Logger>(loggerName, level);
+        ans->pushSink(ax_make_scope<StdoutColorSink>());
+        return ans;
+    }
+
     static UnorderedMap<String, std::function<void(const LogMeta&, String&)>> ax_get_registry_log_emitters() {
         using namespace std::chrono;
         return UnorderedMap<String, std::function<void(const LogMeta&, String&)>>{
@@ -236,9 +262,11 @@ namespace axsed
         };
     }
 
+    static Scope<Logger> ax_default_logger(StdoutColorSink::GenerateLogger("axsed"));
+
     Logger::Logger(const std::string_view loggerName, const LOGLEVEL_ level)
         : m_name(loggerName), m_level(level) {
-        setPattern("[$ymd$ $cms$][$lvs$] $ln$ | $msg$");
+        setPattern("[$ymd$ $cms$] $msg$");
     }
 
     Logger::~Logger() = default;
@@ -339,5 +367,13 @@ namespace axsed
         msgStruct.Message = msgWithPattern;
         for (const Scope<ILogSink>& sink : m_sinks)
             sink->sinkIt(msgStruct);
+    }
+
+    Scope<Logger>& ax_get_default_logger() {
+        return ax_default_logger;
+    }
+
+    void ax_set_default_logger(Scope<Logger>&& logger) {
+        ax_default_logger = std::move(logger);
     }
 }

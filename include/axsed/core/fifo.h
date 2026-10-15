@@ -121,7 +121,7 @@ namespace axsed
                     k <<= 1;
                 m_capacity = k;
             }
-            m_buffer = AX_ALIGNED_MALLOC(T, m_capacity);
+            m_buffer = ax_aligned_alloc<T>(m_capacity);
             if (!m_buffer) {
                 m_capacity = 0;
             }
@@ -321,7 +321,7 @@ namespace axsed
                     k <<= 1;
                 m_capacity = k;
             }
-            m_sequence = AX_ALIGNED_MALLOC(VyukovSequenceCell<T>, m_capacity);
+            m_sequence = ax_aligned_alloc<VyukovSequenceCell<T>>(m_capacity);
             if (!m_sequence) {
                 m_capacity = 0;
             } else {
@@ -429,7 +429,7 @@ namespace axsed
                     return false;
                 }
                 if (spin++; spin == AXSEDCORE_RINGBUFFER_SPIN_COUNT) {
-                    AX_CPU_PAUSE_HINT();
+                    ax_cpu_pause_hint();
                     spin = 0;
                 }
             }
@@ -459,7 +459,7 @@ namespace axsed
                     return false;
                 }
                 if (spin++; spin == AXSEDCORE_RINGBUFFER_SPIN_COUNT) {
-                    AX_CPU_PAUSE_HINT();
+                    ax_cpu_pause_hint();
                     spin = 0;
                 }
             }
@@ -489,7 +489,7 @@ namespace axsed
                     return false;
                 }
                 if (spin++; spin == AXSEDCORE_RINGBUFFER_SPIN_COUNT) {
-                    AX_CPU_PAUSE_HINT();
+                    ax_cpu_pause_hint();
                     spin = 0;
                 }
             }
@@ -532,7 +532,7 @@ namespace axsed
                     k <<= 1;
                 m_capacity = k;
             }
-            m_sequence = AX_ALIGNED_MALLOC(VyukovSequenceCell<T>, m_capacity);
+            m_sequence = ax_aligned_alloc<VyukovSequenceCell<T>>(m_capacity);
             if (!m_sequence) {
                 m_capacity = 0;
             } else {
@@ -621,7 +621,7 @@ namespace axsed
                     return false;
                 }
                 if (spin++; spin == AXSEDCORE_RINGBUFFER_SPIN_COUNT) {
-                    AX_CPU_PAUSE_HINT();
+                    ax_cpu_pause_hint();
                     spin = 0;
                 }
             }
@@ -725,7 +725,7 @@ namespace axsed
                     k <<= 1;
                 m_capacity = k;
             }
-            m_sequence = AX_ALIGNED_MALLOC(VyukovSequenceCell<T>, m_capacity);
+            m_sequence = ax_aligned_alloc<VyukovSequenceCell<T>>(m_capacity);
             if (!m_sequence) {
                 m_capacity = 0;
             } else {
@@ -813,7 +813,7 @@ namespace axsed
                     return false;
                 }
                 if (spin++; spin == AXSEDCORE_RINGBUFFER_SPIN_COUNT) {
-                    AX_CPU_PAUSE_HINT();
+                    ax_cpu_pause_hint();
                     spin = 0;
                 }
             }
@@ -844,7 +844,7 @@ namespace axsed
                     return false;
                 }
                 if (spin++; spin == AXSEDCORE_RINGBUFFER_SPIN_COUNT) {
-                    AX_CPU_PAUSE_HINT();
+                    ax_cpu_pause_hint();
                     spin = 0;
                 }
             }
@@ -874,7 +874,7 @@ namespace axsed
                     return false;
                 }
                 if (spin++; spin == AXSEDCORE_RINGBUFFER_SPIN_COUNT) {
-                    AX_CPU_PAUSE_HINT();
+                    ax_cpu_pause_hint();
                     spin = 0;
                 }
             }
@@ -904,7 +904,7 @@ namespace axsed
                     return false;
                 }
                 if (spin++; spin == AXSEDCORE_RINGBUFFER_SPIN_COUNT) {
-                    AX_CPU_PAUSE_HINT();
+                    ax_cpu_pause_hint();
                     spin = 0;
                 }
             }
