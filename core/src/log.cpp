@@ -184,19 +184,19 @@ namespace axsed
                 }
             },
             {
-                "hr",
+                "h24",
                 [](const LogMeta& meta, String& composite) -> void {
                     std::format_to(std::back_inserter(composite), "{:%H}", meta.ZonedTime);
                 }
             },
             {
-                "hr2",
+                "h12",
                 [](const LogMeta& meta, String& composite) -> void {
                     std::format_to(std::back_inserter(composite), "{:%I}", meta.ZonedTime);
                 }
             },
             {
-                "hrf",
+                "hf",
                 [](const LogMeta& meta, String& composite) -> void {
                     std::format_to(std::back_inserter(composite), "{:%p}", meta.ZonedTime);
                 }

@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.30)
+# basic
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
 endif ()
@@ -11,9 +12,27 @@ project(
         HOMEPAGE_URL "https://github.com/AxinChen0531/axsed.git"
 )
 
+# config
+
+# probe
+include(CheckCXXSourceCompiles)
+if (MINGW)
+    set(_AXSED_MINGW 1)
+    check_cxx_source_compiles(
+            "
+                #include <cstdio>
+                #ifndef _UCRT
+                #error \"MinGW runtime is not UCRT\"
+                #endif
+                int main() { return 0; }
+            "
+            _AXSED_MINGW_UCRT
+    )
+endif ()
 add_subdirectory(core)
 add_subdirectory(demo EXCLUDE_FROM_ALL)
 
+# install
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 install(

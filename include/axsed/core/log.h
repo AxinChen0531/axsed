@@ -57,8 +57,8 @@ namespace axsed
 
     class Logger;
     /**
-     * default logger's default sink
-     * to output colored text to terminal
+     * default logger's default sink;
+     * to output colored text to terminal;
      */
     class AXSEDCORE_API StdoutColorSink final : public ILogSink
     {
@@ -95,14 +95,14 @@ namespace axsed
          */
         [[nodiscard]] LOGLEVEL_ getLevel() const noexcept;
         /**
-         * get log msg composite pattern
-         * default is "[$ymd$ $cms$] $msg$"
+         * get log msg composite pattern;
+         * default is "[$ymd$ $cms$] $msg$";
          * @attention multi-thread safe
          */
         [[nodiscard]] String getPattern() const noexcept;
         /**
-         * set the logger's minium processing level
-         * default is "[$ymd$ $cms$] $msg$"
+         * set the logger's minium processing level;
+         * default is "[$ymd$ $cms$] $msg$";
          * @param level the minium level
          * @attention multi-thread safe
          */
@@ -135,9 +135,9 @@ namespace axsed
          * - $wy$ - the week of year in 2 digital, first Sunday of the year as the 01 week's first day, before is 00 week, in current timezone
          * - $wy1$ - the week of year in 2 digital, first Monday of the year as the 01 week's first day, before is 00 week, in current timezone
          * - $ymd$ - the regular date format, equal to $yr$-$mt$-$dom$ but with higher performance
-         * - $hr$ - the hour of the day [0, 24) in 2 digital, in current timezone
-         * - $hr2$ - the hour of the day [0, 12) in 2 digital, in current timezone
-         * - $hrf$ - AM/PM flag, in current timezone
+         * - $h24$ - the hour of the day [0, 24) in 2 digital, in current timezone
+         * - $h12$ - the hour of the day [0, 12) in 2 digital, in current timezone
+         * - $hf$ - AM/PM flag, in current timezone
          * - $min$ - the minutes of the hour [0, 60) in 2 digital, in current timezone
          * - $sec$ - the seconds of the minute [0, 60) in 2 digital, in current timezone
          * - $msc$ - the milliseconds of the second [0, 1000) in 2 digital, in current timezone
@@ -191,15 +191,16 @@ namespace axsed
     };
 
     /**
-     * get the default logger
-     * macro AX_TRACE AX_DEBUG AX_INFO AX_WARN AX_ERROR AX_FATAL will using the default logger
-     * have a default Logger with StdoutColorSink, set to nullptr to save some memory(NOT RECOMMENDED)
+     * get the default logger;
+     * macro AX_TRACE AX_DEBUG AX_INFO AX_WARN AX_ERROR AX_FATAL will using the default logger;
+     * have a default Logger with StdoutColorSink, set to nullptr to save some memory(NOT RECOMMENDED);
      */
     AXSEDCORE_API Scope<Logger>& ax_get_default_logger();
     /**
      * default logger setting, will delete the old one.
-     * macro AX_TRACE AX_DEBUG AX_INFO AX_WARN AX_ERROR AX_FATAL will using the default logger
-     * have a default Logger with StdoutColorSink, set to nullptr to save some memory(NOT RECOMMENDED)
+     * macro AX_TRACE AX_DEBUG AX_INFO AX_WARN AX_ERROR AX_FATAL will using the default logger;
+     * there's a default Logger with StdoutColorSink at the start of the runtime;
+     * set to nullptr to save some memory(NOT RECOMMENDED);
      * @attention multi-thread unsafe
      * @param logger
      */
