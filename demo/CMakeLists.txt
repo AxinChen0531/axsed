@@ -4,7 +4,6 @@ file(
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 )
 
-# Shared link
 add_executable(axsedDemo ${SRC_FILES})
 target_link_libraries(axsedDemo PRIVATE axsedCore)
 add_custom_command(
@@ -15,7 +14,3 @@ add_custom_command(
         COMMAND_EXPAND_LISTS
         COMMENT "Copying runtime DLLs next to axsedDemo"
 )
-
-# Static link
-add_executable(axsedDemo_s ${SRC_FILES})
-target_link_libraries(axsedDemo_s PRIVATE axsedCore_s)

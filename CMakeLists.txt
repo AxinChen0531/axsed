@@ -12,8 +12,6 @@ project(
         HOMEPAGE_URL "https://github.com/AxinChen0531/axsed.git"
 )
 
-# config
-
 # probe
 include(CheckCXXSourceCompiles)
 if (MINGW)
@@ -36,8 +34,7 @@ add_subdirectory(demo EXCLUDE_FROM_ALL)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 install(
-        TARGETS
-        axsedCore axsedCore_s
+        TARGETS axsedCore
         EXPORT axsedTargets
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
